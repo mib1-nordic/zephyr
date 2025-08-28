@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2025 Silicon Laboratories Inc.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <dt-bindings/pinctrl/silabs/xg24-pinctrl.h>
+
+/ {
+	aliases {
+		test-flash = &mx25r80;
+	};
+
+	fstab {
+		compatible = "zephyr,fstab";
+		ffs1: ffs1 {
+			compatible = "zephyr,fstab,fatfs";
+			automount;
+			disk-access;
+			mount-point = "/FLASH:";
+		};
+	};
+
+	flash_disk {
+		compatible = "zephyr,flash-disk";
+		partition = <&test_partition>;
+		disk-name = "FLASH";
+		sector-size = <512>;
+		cache-size = <65536>;
+	};
+
+};
+
+&eusart1 {
+	dmas = <&dma0 DMA_REQSEL_EUSART1TXFL>,
+	       <&dma0 DMA_REQSEL_EUSART1RXFL>;
+	dma-names = "tx", "rx";
+};
+
+&mx25r80 {
+	status = "okay";
+	spi-max-frequency = <DT_FREQ_M(4)>;
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		test_partition: partition@0 {
+			reg = <0 0x80000>;
+			label = "FLASH";
+		};
+	};
+};
+
+&dma0 {
+	status = "okay";
+};
+
+&mx25r80 {
+	zephyr,pm-device-runtime-auto;
+};
+
+// /delete-node/ &ls0xx_ls013b7dh03;
+// /delete-node/ &mx25r80;

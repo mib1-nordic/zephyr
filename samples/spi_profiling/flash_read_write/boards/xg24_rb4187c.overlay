@@ -1,0 +1,23 @@
+#include <dt-bindings/pinctrl/silabs/xg24-pinctrl.h>
+
+/ {
+	aliases {
+		test-flash = &mx25r80;
+	};
+};
+
+&mx25r80 {
+	status = "okay";
+	spi-max-frequency = <DT_FREQ_M(4)>;
+	zephyr,pm-device-runtime-auto;
+};
+
+&eusart1 {
+	dmas = <&dma0 DMA_REQSEL_EUSART1TXFL>,
+		<&dma0 DMA_REQSEL_EUSART1RXFL>;
+	dma-names = "tx", "rx";
+};
+
+&dma0 {
+	status = "okay";
+};

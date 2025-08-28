@@ -1,0 +1,56 @@
+/ {
+	aliases {
+		test-flash = &mx25r64;
+	};
+
+	fstab {
+		compatible = "zephyr,fstab";
+		ffs1: ffs1 {
+			compatible = "zephyr,fstab,fatfs";
+			automount;
+			disk-access;
+			mount-point = "/FLASH:";
+		};
+	};
+
+	flash_disk {
+		compatible = "zephyr,flash-disk";
+		partition = <&test_partition>;
+		disk-name = "FLASH";
+		sector-size = <512>;
+		cache-size = <65536>;
+	};
+};
+
+&mx25r64 {
+	status = "okay";
+	spi-max-frequency = <DT_FREQ_M(4)>;
+	zephyr,pm-device-runtime-auto;
+
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		test_partition: partition@0 {
+			reg = <0 0x80000>;
+			label = "FLASH";
+		};
+	};
+};
+
+/* Change console uart. */
+
+/ {
+	chosen {
+		zephyr,console = &uart30;
+	};
+};
+
+&uart30 {
+	status = "okay";
+};
+
+&uart20 {
+	status = "disabled";
+};

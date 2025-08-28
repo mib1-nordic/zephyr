@@ -1,0 +1,70 @@
+/*
+Loopbacks:
+	- SPI00: P2.02 <-> P2.04
+	- SPI22: P1.11 <-> P1.09
+*/
+
+/ {
+	chosen {
+		zephyr,console = &uart30;
+	};
+};
+
+// &spi22 {
+// 	status = "okay";
+// 	pinctrl-0 = <&spi22_default_alt>;
+// 	pinctrl-1 = <&spi22_sleep_alt>;
+// 	pinctrl-names = "default", "sleep";
+// 	overrun-character = <0x00>;
+// 	cs-gpios = <&gpio2 10 GPIO_ACTIVE_LOW>;
+// 	zephyr,pm-device-runtime-auto;
+// 	dut_spi: test-spi-dev@0 {
+// 		compatible = "vnd,spi-device";
+// 		reg = <0>;
+// 		spi-max-frequency = <DT_FREQ_M(4)>;
+// 	};
+// };
+
+&spi00 {
+	status = "okay";
+	cs-gpios = <&gpio2 10 GPIO_ACTIVE_LOW>;
+	zephyr,pm-device-runtime-auto;
+	dut_spi: test-spi-dev@1 {
+		compatible = "vnd,spi-device";
+		reg = <0>;
+		spi-max-frequency = <DT_FREQ_M(4)>;
+	};
+};
+
+
+
+&gpio2 {
+	status = "okay";
+};
+
+&uart30 {
+	status = "okay";
+};
+
+&uart20 {
+	status = "disabled";
+};
+
+&pinctrl {
+	spi22_default_alt: spi22_default_alt {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
+				<NRF_PSEL(SPIM_MISO, 1, 11)>,
+				<NRF_PSEL(SPIM_MOSI, 1, 9)>;
+		};
+	};
+
+	spi22_sleep_alt: spi22_sleep_alt {
+		group1 {
+			psels = <NRF_PSEL(SPIM_SCK, 1, 13)>,
+				<NRF_PSEL(SPIM_MISO, 1, 11)>,
+				<NRF_PSEL(SPIM_MOSI, 1, 9)>;
+			low-power-enable;
+		};
+	};
+};

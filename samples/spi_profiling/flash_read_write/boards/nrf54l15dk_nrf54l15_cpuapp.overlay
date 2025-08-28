@@ -1,0 +1,23 @@
+/ {
+	chosen {
+		zephyr,console = &uart30;
+	};
+
+	aliases {
+		test-flash = &mx25r64;
+	};
+};
+
+&uart30 {
+	status = "okay";
+};
+
+&uart20 {
+	status = "disabled";
+};
+
+&mx25r64 {
+	status = "okay";
+	spi-max-frequency = <DT_FREQ_M(4)>;
+	zephyr,pm-device-runtime-auto;
+};
