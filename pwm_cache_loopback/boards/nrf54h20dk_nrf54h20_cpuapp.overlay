@@ -1,0 +1,57 @@
+/*
+ * PWM120 with its sequence in the cacheable dma_fast_region.
+ * PWM_OUT0..3 on P7.0, P7.1, P7.6, P7.7 (the only P7 pins PWM120 can use).
+ * P7.2..P7.5 are plain inputs used to sense them.
+ */
+/ {
+	aliases {
+		pwm-test = &pwm120;
+	};
+};
+
+&pinctrl {
+	pwm120_loop_default: pwm120_loop_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 7, 0)>,
+				<NRF_PSEL(PWM_OUT1, 7, 1)>,
+				<NRF_PSEL(PWM_OUT2, 7, 6)>,
+				<NRF_PSEL(PWM_OUT3, 7, 7)>;
+		};
+	};
+
+	pwm120_loop_sleep: pwm120_loop_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 7, 0)>,
+				<NRF_PSEL(PWM_OUT1, 7, 1)>,
+				<NRF_PSEL(PWM_OUT2, 7, 6)>,
+				<NRF_PSEL(PWM_OUT3, 7, 7)>;
+			low-power-enable;
+		};
+	};
+};
+
+&dma_fast_region {
+	status = "okay";
+};
+
+&gpio7 {
+	status = "okay";
+};
+
+&pwm120 {
+	pinctrl-0 = <&pwm120_loop_default>;
+	pinctrl-1 = <&pwm120_loop_sleep>;
+	pinctrl-names = "default", "sleep";
+	memory-regions = <&dma_fast_region>;
+	status = "okay";
+};
+
+/* Declaring the sense pins here makes the UICR PERIPHCONF generator grant the application
+ * core access to P7.2..P7.5 (SPU permissions); pins without a user are left inaccessible.
+ */
+/ {
+	zephyr,user {
+		sense-gpios = <&gpio7 2 GPIO_ACTIVE_HIGH>, <&gpio7 3 GPIO_ACTIVE_HIGH>,
+			      <&gpio7 4 GPIO_ACTIVE_HIGH>, <&gpio7 5 GPIO_ACTIVE_HIGH>;
+	};
+};

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "PWM cache loopback sample"
+
+config SAMPLE_PAD_SIZE
+	int "Size of the pad placed before the driver's sequence buffer [bytes]"
+	default 28
+	help
+	  The pad shifts the pwm_nrfx sequence buffer (4 x uint16_t) inside the PWM DMA region.
+	  With the 32-byte cache line and the pad of 28 bytes the buffer starts at offset 28 of
+	  a line: channels 0-1 end up in one line and channels 2-3 in the next one.
+	  Must be a multiple of 4. If the driver's buffer is not at the end of the pad (check
+	  zephyr.map), the sample reports it and exits.
+
+source "Kconfig.zephyr"
